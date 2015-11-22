@@ -27,7 +27,6 @@ MeshGeometry* PigGeometry = NULL;
 MeshGeometry* Pig2Geometry = NULL;
 MeshGeometry* BatGeometry = NULL;
 MeshGeometry* GroundGeometry = NULL;
-MeshGeometry* BushGeometry = NULL;
 MeshGeometry* PokusGeometry = NULL;
 MeshGeometry* SmokeGeometry = NULL;
 MeshGeometry* CompassGeometry = NULL;
@@ -46,8 +45,6 @@ const char* BASE_MODEL_NAME = "data/models/ground/ground.obj";
 const char* PIG_MODEL_NAME = "data/models/pig/pig.obj";
 const char* PIG2_MODEL_NAME = "data/models/pig/pig.obj";
 const char* BAT_MODEL_NAME = "data/models/bat/bat.obj";
-//const char* BUSH_MODEL_NAME = "data/models/lumberjack/lumberJack.obj";
-const char* BUSH_MODEL_NAME = "data/models/bush/SH20_1.obj";
 
 //Textures path
 const char* SMOKE_TEXTURE_NAME = "data/textures/smoke/smoke_move_square.png";
@@ -621,38 +618,6 @@ void PGRdrawSkybox(const glm::mat4 & viewMatrix, const glm::mat4 & projectionMat
 	glUseProgram(0);
 }
 
-void drawBush(bartovra::Object *Bush, int stencilNum,const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix) {
-
-	glUseProgram(shaderProgram.program);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-	glStencilFunc(GL_ALWAYS, stencilNum, -1);
-
-	glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), Bush->getPosition());
-	modelMatrix = glm::rotate(modelMatrix, Bush->getViewAngle(), glm::vec3(0, 1, 0));
-	modelMatrix = glm::scale(modelMatrix, glm::vec3(Bush->getSize(), Bush->getSize(), Bush->getSize()));
-
-	// setting matrices to the vertex & fragment shader
-	setTransformUniforms(modelMatrix, viewMatrix, projectionMatrix);
-
-	setMaterialUniforms(
-		BushGeometry->ambient,
-		BushGeometry->diffuse,
-		BushGeometry->specular,
-		BushGeometry->shininess,
-		BushGeometry->texture
-		);
-
-	glBindVertexArray(BushGeometry->vertexArrayObject);
-	glDrawElements(GL_TRIANGLES, BushGeometry->numTriangles * 3, GL_UNSIGNED_INT, 0);
-
-	glBindVertexArray(0);
-	glUseProgram(0);
-
-	return;
-}
-
-
-
 void cleanupShaderPrograms(void) {
 	pgr::deleteProgramAndShaders(shaderProgram.program);
 	pgr::deleteProgramAndShaders(PGRskyboxFarPlaneShaderProgram.program);
@@ -1125,12 +1090,6 @@ void initializeModels() {
   }
   CHECK_GL_ERROR();
 
-  // load Bush model from external file
-  if(loadSingleMesh(BUSH_MODEL_NAME, shaderProgram, &BushGeometry) != true) {
-	  std::cerr << "initializeModels(): Bush model loading failed." << std::endl;
-  }
-  CHECK_GL_ERROR();
-
   // fill MeshGeometry structure for smoke object
   initSmokeGeometry(AniTexShaderProgram.program, &SmokeGeometry);
 
@@ -1160,7 +1119,6 @@ void cleanupModels() {
   cleanupGeometry(BaseGeometry);
   cleanupGeometry(PigGeometry);
   cleanupGeometry(BatGeometry);
-  cleanupGeometry(BushGeometry);
 
   cleanupGeometry(SmokeGeometry);
   cleanupGeometry(CloudGeometry);

@@ -69,13 +69,7 @@ struct SceneObjects {
   bartovra::Object *Fence6;
   bartovra::Object *Fence7;
   bartovra::Object *Fence8;
-  bartovra::Object *Fence9;
-
-  bartovra::Object *Bush1;
-  bartovra::Object *Bush2;
-  bartovra::Object *Bush3;
-  bartovra::Object *Bush4;
-  bartovra::Object *Bush5;
+  bartovra::Object *Fence9;;
 
   bartovra::Object *Cross;
   bartovra::Object *Base;
@@ -208,12 +202,6 @@ void restartScene(void) {
   if(SceneObjects.Pig == NULL) SceneObjects.Pig = new bartovra::Object(glm::vec3(0.0, 0.125f, 2.0f),-90.0f,0.1f,SceneState.elapsedTime);
   if(SceneObjects.Pig2 == NULL) SceneObjects.Pig2 = new bartovra::Object(glm::vec3(0.0, 0.125f, 1.4f),0.0f,0.06f,SceneState.elapsedTime);
   if(SceneObjects.Bat == NULL) SceneObjects.Bat = new bartovra::Object(glm::vec3(-0.05f, 1.0f, 1.2f),0.0f,0.1f,SceneState.elapsedTime);
-
-  if(SceneObjects.Bush1 == NULL) SceneObjects.Bush1 = new bartovra::Object(glm::vec3(0.55f, 0.17f, -1.45f),0.0f,0.18f,SceneState.elapsedTime);//graveyard
-  if(SceneObjects.Bush2 == NULL) SceneObjects.Bush2 = new bartovra::Object(glm::vec3(0.95f, 0.17f, -1.45f),30.0f,0.14f,SceneState.elapsedTime);//graveyard
-  if(SceneObjects.Bush3 == NULL) SceneObjects.Bush3 = new bartovra::Object(glm::vec3(-0.82f, 0.17f, 0.18f),0.0f,0.14f,SceneState.elapsedTime);//left from chapel
-  if(SceneObjects.Bush4 == NULL) SceneObjects.Bush4 = new bartovra::Object(glm::vec3(-0.85f, 0.17f, -0.18f),60.0f,0.18f,SceneState.elapsedTime);//left from chapel
-  if(SceneObjects.Bush5 == NULL) SceneObjects.Bush5 = new bartovra::Object(glm::vec3(1.0f, 0.17f, -0.55f),-30.0f,0.18f,SceneState.elapsedTime);//graveyard
 
   if(SceneObjects.Smoke1 == NULL) SceneObjects.Smoke1 = new bartovra::AniTex(glm::vec3(1.1f, 0.72f, 0.18f),0.1f,9,0.2f,SceneState.elapsedTime);//pub2
   if(SceneObjects.Smoke2 == NULL) SceneObjects.Smoke2 = new bartovra::AniTex(glm::vec3(-1.15f, 0.72f, 0.85f),0.1f,9,0.2f,SceneState.elapsedTime);//pub
@@ -387,12 +375,6 @@ void drawWindowContents() {
   drawBase(SceneObjects.Base,PICKING_BASE, camera.viewMatrix, camera.projectionMatrix);
   drawBat(SceneObjects.Bat,PICKING_BAT, camera.viewMatrix, camera.projectionMatrix);
 
-  drawBush(SceneObjects.Bush1,PICKING_BUSH_1, camera.viewMatrix, camera.projectionMatrix);
-  drawBush(SceneObjects.Bush2,PICKING_BUSH_2, camera.viewMatrix, camera.projectionMatrix);
-  drawBush(SceneObjects.Bush3,PICKING_BUSH_3, camera.viewMatrix, camera.projectionMatrix);
-  drawBush(SceneObjects.Bush4,PICKING_BUSH_4, camera.viewMatrix, camera.projectionMatrix);
-  drawBush(SceneObjects.Bush5,PICKING_BUSH_5, camera.viewMatrix, camera.projectionMatrix);
-
   drawFence(SceneObjects.Fence1,PICKING_FENCE_1, camera.viewMatrix, camera.projectionMatrix);
   drawFence(SceneObjects.Fence2,PICKING_FENCE_2, camera.viewMatrix, camera.projectionMatrix);
   drawFence(SceneObjects.Fence3,PICKING_FENCE_3, camera.viewMatrix, camera.projectionMatrix);
@@ -552,11 +534,6 @@ void initializeApplication() {
   SceneObjects.Pig = NULL;
   SceneObjects.Pig2 = NULL;
   SceneObjects.Bat = NULL;
-  SceneObjects.Bush1 = NULL;
-  SceneObjects.Bush2 = NULL;
-  SceneObjects.Bush3 = NULL;
-  SceneObjects.Bush4 = NULL;
-  SceneObjects.Bush5 = NULL;
 
 
   SceneObjects.Smoke1 = NULL;
