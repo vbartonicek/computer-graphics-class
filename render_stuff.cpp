@@ -26,6 +26,8 @@ MeshGeometry* BaseGeometry = NULL;
 MeshGeometry* PigGeometry = NULL;
 MeshGeometry* Pig2Geometry = NULL;
 MeshGeometry* BatGeometry = NULL;
+MeshGeometry* TreeGeometry = NULL;
+
 MeshGeometry* GroundGeometry = NULL;
 MeshGeometry* PokusGeometry = NULL;
 MeshGeometry* SmokeGeometry = NULL;
@@ -45,6 +47,7 @@ const char* BASE_MODEL_NAME = "data/models/ground/ground.obj";
 const char* PIG_MODEL_NAME = "data/models/pig/pig.obj";
 const char* PIG2_MODEL_NAME = "data/models/pig/pig.obj";
 const char* BAT_MODEL_NAME = "data/models/bat/bat.obj";
+const char* TREE_MODEL_NAME = "data/models/tree/tree4-obj.obj";
 
 //Textures path
 const char* SMOKE_TEXTURE_NAME = "data/textures/smoke/smoke_move_square.png";
@@ -513,6 +516,44 @@ void drawBat(bartovra::Object *Bat, int stencilNum,const glm::mat4 & viewMatrix,
 
 	glBindVertexArray(0);
 	glUseProgram(0);
+
+	return;
+}
+
+
+void drawTree(bartovra::Object *Tree, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix) {
+
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glUseProgram(shaderProgram.program);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	glStencilFunc(GL_ALWAYS, stencilNum, -1);
+
+	glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), Tree->getPosition());
+	modelMatrix = glm::rotate(modelMatrix, Tree->getViewAngle(), glm::vec3(0, 1, 0));
+	modelMatrix = glm::scale(modelMatrix, glm::vec3(Tree->getSize(), Tree->getSize(), Tree->getSize()));
+
+	// setting matrices to the vertex & fragment shader
+	setTransformUniforms(modelMatrix, viewMatrix, projectionMatrix);
+
+	setMaterialUniforms(
+		TreeGeometry->ambient,
+		TreeGeometry->diffuse,
+		TreeGeometry->specular,
+		TreeGeometry->shininess,
+		TreeGeometry->texture
+		);
+
+
+	glBindVertexArray(TreeGeometry->vertexArrayObject);
+	glDrawElements(GL_TRIANGLES, TreeGeometry->numTriangles * 3, GL_UNSIGNED_INT, 0);
+
+	glBindVertexArray(0);
+	glUseProgram(0);
+
+	glDisable(GL_BLEND);
 
 	return;
 }
@@ -1090,6 +1131,12 @@ void initializeModels() {
   }
   CHECK_GL_ERROR();
 
+  // load tree model from external file
+  if (loadSingleMesh(TREE_MODEL_NAME, shaderProgram, &TreeGeometry) != true) {
+	  std::cerr << "initializeModels(): Tree model loading failed." << std::endl;
+  }
+  CHECK_GL_ERROR();
+
   // fill MeshGeometry structure for smoke object
   initSmokeGeometry(AniTexShaderProgram.program, &SmokeGeometry);
 
@@ -1119,6 +1166,7 @@ void cleanupModels() {
   cleanupGeometry(BaseGeometry);
   cleanupGeometry(PigGeometry);
   cleanupGeometry(BatGeometry);
+  cleanupGeometry(TreeGeometry);
 
   cleanupGeometry(SmokeGeometry);
   cleanupGeometry(CloudGeometry);

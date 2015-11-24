@@ -60,6 +60,7 @@ struct SceneObjects {
   bartovra::Object *Pig;
   bartovra::Object *Pig2;
   bartovra::Object *Bat;
+  bartovra::Object *Tree;
 
   bartovra::Object *Fence1;
   bartovra::Object *Fence2;
@@ -195,7 +196,8 @@ void restartScene(void) {
   if(SceneObjects.Fence7 == NULL) SceneObjects.Fence7 = new bartovra::Object(glm::vec3(1.12f, 0.13f, -0.86f),90.0f,0.12f,SceneState.elapsedTime);
   if(SceneObjects.Fence8 == NULL) SceneObjects.Fence8 = new bartovra::Object(glm::vec3(1.12f, 0.13f, -0.63f),90.0f,0.12f,SceneState.elapsedTime);
   if(SceneObjects.Fence9 == NULL) SceneObjects.Fence9 = new bartovra::Object(glm::vec3(1.12f, 0.13f, -0.40f),90.0f,0.12f,SceneState.elapsedTime);//at pub
-  if(SceneObjects.Cross == NULL) SceneObjects.Cross = new bartovra::Object(glm::vec3(0.15f, 0.10f, -0.73f),90.0f,0.05f,SceneState.elapsedTime);
+  if(SceneObjects.Cross == NULL) SceneObjects.Cross = new bartovra::Object(glm::vec3(0.15f, 0.10f, -0.73f), 90.0f, 0.05f, SceneState.elapsedTime);
+  if(SceneObjects.Tree == NULL) SceneObjects.Tree = new bartovra::Object(glm::vec3(1.12f, 0.42f, -1.6f), 0.0f, 0.5f, SceneState.elapsedTime);
   
   if(SceneObjects.Base == NULL) SceneObjects.Base = new bartovra::Object(glm::vec3(0.15f, 0.05f, 0.0f),90.0f,5.0f,SceneState.elapsedTime);
   
@@ -373,7 +375,8 @@ void drawWindowContents() {
   drawWindmill(SceneObjects.Windmill,PICKING_WINDMILL, camera.viewMatrix, camera.projectionMatrix);
   drawCross(SceneObjects.Cross,PICKING_CROSS, camera.viewMatrix, camera.projectionMatrix);
   drawBase(SceneObjects.Base,PICKING_BASE, camera.viewMatrix, camera.projectionMatrix);
-  drawBat(SceneObjects.Bat,PICKING_BAT, camera.viewMatrix, camera.projectionMatrix);
+  drawBat(SceneObjects.Bat, PICKING_BAT, camera.viewMatrix, camera.projectionMatrix);
+  drawTree(SceneObjects.Tree, PICKING_TREE, camera.viewMatrix, camera.projectionMatrix);
 
   drawFence(SceneObjects.Fence1,PICKING_FENCE_1, camera.viewMatrix, camera.projectionMatrix);
   drawFence(SceneObjects.Fence2,PICKING_FENCE_2, camera.viewMatrix, camera.projectionMatrix);
@@ -534,6 +537,7 @@ void initializeApplication() {
   SceneObjects.Pig = NULL;
   SceneObjects.Pig2 = NULL;
   SceneObjects.Bat = NULL;
+  SceneObjects.Tree = NULL;
 
 
   SceneObjects.Smoke1 = NULL;

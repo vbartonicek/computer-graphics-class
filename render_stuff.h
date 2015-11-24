@@ -72,6 +72,7 @@ void drawBase(bartovra::Object* Base, int stencilNum, const glm::mat4 & viewMatr
 void drawPig(bartovra::Object* Pig, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
 void drawPigCurve(bartovra::Object* PigCurve, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
 void drawBat(bartovra::Object* Bat, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
+void drawTree(bartovra::Object* Tree, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
 
 void drawSmoke(bartovra::AniTex* smoke, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
 void drawCloud(bartovra::MovTex* Cloud, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);

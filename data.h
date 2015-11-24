@@ -77,7 +77,8 @@ enum {
 	PICKING_WINDMILL,
 	PICKING_CROSS,
 	PICKING_BASE,
-	PICKING_BAT
+	PICKING_BAT,
+	PICKING_TREE
 };
 
 //Animated texture of smoke
