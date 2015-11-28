@@ -197,7 +197,6 @@ void restartScene(void) {
   if(SceneObjects.Fence8 == NULL) SceneObjects.Fence8 = new bartovra::Object(glm::vec3(1.12f, 0.13f, -0.63f),90.0f,0.12f,SceneState.elapsedTime);
   if(SceneObjects.Fence9 == NULL) SceneObjects.Fence9 = new bartovra::Object(glm::vec3(1.12f, 0.13f, -0.40f),90.0f,0.12f,SceneState.elapsedTime);//at pub
   if(SceneObjects.Cross == NULL) SceneObjects.Cross = new bartovra::Object(glm::vec3(0.15f, 0.10f, -0.73f), 90.0f, 0.05f, SceneState.elapsedTime);
-  if(SceneObjects.Tree == NULL) SceneObjects.Tree = new bartovra::Object(glm::vec3(1.12f, 0.42f, -1.6f), 0.0f, 0.5f, SceneState.elapsedTime);
   
   if(SceneObjects.Base == NULL) SceneObjects.Base = new bartovra::Object(glm::vec3(0.15f, 0.05f, 0.0f),90.0f,5.0f,SceneState.elapsedTime);
   
@@ -209,7 +208,8 @@ void restartScene(void) {
   if(SceneObjects.Smoke2 == NULL) SceneObjects.Smoke2 = new bartovra::AniTex(glm::vec3(-1.15f, 0.72f, 0.85f),0.1f,9,0.2f,SceneState.elapsedTime);//pub
   if(SceneObjects.Smoke3 == NULL) SceneObjects.Smoke3 = new bartovra::AniTex(glm::vec3(1.35f, 0.98f, 1.40f),0.1f,9,0.2f,SceneState.elapsedTime);//podloubi
 
-  if(SceneObjects.Cloud == NULL) SceneObjects.Cloud = new bartovra::MovTex(glm::vec3(0.15f, 5.00f, -5.5f),4.0f,SceneState.elapsedTime);
+  if (SceneObjects.Cloud == NULL) SceneObjects.Cloud = new bartovra::MovTex(glm::vec3(0.15f, 5.00f, -5.5f), 4.0f, SceneState.elapsedTime);
+  if (SceneObjects.Tree == NULL) SceneObjects.Tree = new bartovra::Object(glm::vec3(1.12f, 0.42f, -1.6f), 0.0f, 0.5f, SceneState.elapsedTime);
 
 }
 
@@ -376,7 +376,6 @@ void drawWindowContents() {
   drawCross(SceneObjects.Cross,PICKING_CROSS, camera.viewMatrix, camera.projectionMatrix);
   drawBase(SceneObjects.Base,PICKING_BASE, camera.viewMatrix, camera.projectionMatrix);
   drawBat(SceneObjects.Bat, PICKING_BAT, camera.viewMatrix, camera.projectionMatrix);
-  drawTree(SceneObjects.Tree, PICKING_TREE, camera.viewMatrix, camera.projectionMatrix);
 
   drawFence(SceneObjects.Fence1,PICKING_FENCE_1, camera.viewMatrix, camera.projectionMatrix);
   drawFence(SceneObjects.Fence2,PICKING_FENCE_2, camera.viewMatrix, camera.projectionMatrix);
@@ -396,6 +395,8 @@ void drawWindowContents() {
 
   // draw PGRskybox
   PGRdrawSkybox(camera.viewMatrix, camera.projectionMatrix);
+
+  drawTree(SceneObjects.Tree, PICKING_TREE, camera.viewMatrix, camera.projectionMatrix);
 
   //draw clouds
   if (SceneState.cloud_on_off==true)drawCloud(SceneObjects.Cloud,PICKING_CLOUD_1, camera.viewMatrix, camera.projectionMatrix);
