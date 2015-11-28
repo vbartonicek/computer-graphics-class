@@ -61,6 +61,7 @@ struct SceneObjects {
   bartovra::Object *Pig2;
   bartovra::Object *Bat;
   bartovra::Object *Tree;
+  bartovra::Object *Stump;
 
   bartovra::Object *Fence1;
   bartovra::Object *Fence2;
@@ -197,6 +198,7 @@ void restartScene(void) {
   if(SceneObjects.Fence8 == NULL) SceneObjects.Fence8 = new bartovra::Object(glm::vec3(1.12f, 0.13f, -0.63f),90.0f,0.12f,SceneState.elapsedTime);
   if(SceneObjects.Fence9 == NULL) SceneObjects.Fence9 = new bartovra::Object(glm::vec3(1.12f, 0.13f, -0.40f),90.0f,0.12f,SceneState.elapsedTime);//at pub
   if(SceneObjects.Cross == NULL) SceneObjects.Cross = new bartovra::Object(glm::vec3(0.15f, 0.10f, -0.73f), 90.0f, 0.05f, SceneState.elapsedTime);
+  if (SceneObjects.Stump == NULL) SceneObjects.Stump= new bartovra::Object(glm::vec3(-0.05f, 0.14f, 3.0f), -90.0f, 0.05f, SceneState.elapsedTime);
   
   if(SceneObjects.Base == NULL) SceneObjects.Base = new bartovra::Object(glm::vec3(0.15f, 0.05f, 0.0f),90.0f,5.0f,SceneState.elapsedTime);
   
@@ -376,6 +378,7 @@ void drawWindowContents() {
   drawCross(SceneObjects.Cross,PICKING_CROSS, camera.viewMatrix, camera.projectionMatrix);
   drawBase(SceneObjects.Base,PICKING_BASE, camera.viewMatrix, camera.projectionMatrix);
   drawBat(SceneObjects.Bat, PICKING_BAT, camera.viewMatrix, camera.projectionMatrix);
+  drawStump(SceneObjects.Stump, PICKING_STUMP, camera.viewMatrix, camera.projectionMatrix);
 
   drawFence(SceneObjects.Fence1,PICKING_FENCE_1, camera.viewMatrix, camera.projectionMatrix);
   drawFence(SceneObjects.Fence2,PICKING_FENCE_2, camera.viewMatrix, camera.projectionMatrix);
@@ -539,6 +542,7 @@ void initializeApplication() {
   SceneObjects.Pig2 = NULL;
   SceneObjects.Bat = NULL;
   SceneObjects.Tree = NULL;
+  SceneObjects.Stump = NULL;
 
 
   SceneObjects.Smoke1 = NULL;
