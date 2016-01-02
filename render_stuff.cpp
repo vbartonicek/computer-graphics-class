@@ -27,7 +27,6 @@ MeshGeometry* PigGeometry = NULL;
 MeshGeometry* Pig2Geometry = NULL;
 MeshGeometry* BatGeometry = NULL;
 MeshGeometry* TreeGeometry = NULL;
-MeshGeometry* StumpGeometry = NULL;
 
 MeshGeometry* GroundGeometry = NULL;
 MeshGeometry* PokusGeometry = NULL;
@@ -48,8 +47,7 @@ const char* BASE_MODEL_NAME = "data/models/ground/ground.obj";
 const char* PIG_MODEL_NAME = "data/models/pig/pig.obj";
 const char* PIG2_MODEL_NAME = "data/models/pig/pig.obj";
 const char* BAT_MODEL_NAME = "data/models/bat/bat.obj";
-const char* TREE_MODEL_NAME = "data/models/tree/tree4-obj.obj";
-const char* STUMP_MODEL_NAME = "data/models/stump/tree stomp sculpture.obj";
+const char* TREE_MODEL_NAME = "data/models/tree/Tree_OBJ.obj";
 
 //Textures path
 const char* SMOKE_TEXTURE_NAME = "data/textures/smoke/smoke_move_square.png";
@@ -522,12 +520,7 @@ void drawBat(bartovra::Object *Bat, int stencilNum,const glm::mat4 & viewMatrix,
 	return;
 }
 
-
 void drawTree(bartovra::Object *Tree, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix) {
-
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glUseProgram(shaderProgram.program);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
@@ -548,41 +541,8 @@ void drawTree(bartovra::Object *Tree, int stencilNum, const glm::mat4 & viewMatr
 		TreeGeometry->texture
 		);
 
-
 	glBindVertexArray(TreeGeometry->vertexArrayObject);
 	glDrawElements(GL_TRIANGLES, TreeGeometry->numTriangles * 3, GL_UNSIGNED_INT, 0);
-
-	glBindVertexArray(0);
-	glUseProgram(0);
-
-	glDisable(GL_BLEND);
-
-	return;
-}
-
-void drawStump(bartovra::Object *Stump, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix) {
-
-	glUseProgram(shaderProgram.program);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-	glStencilFunc(GL_ALWAYS, stencilNum, -1);
-
-	glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), Stump->getPosition());
-	modelMatrix = glm::rotate(modelMatrix, Stump->getViewAngle(), glm::vec3(0, 1, 0));
-	modelMatrix = glm::scale(modelMatrix, glm::vec3(Stump->getSize(), Stump->getSize(), Stump->getSize()));
-
-	// setting matrices to the vertex & fragment shader
-	setTransformUniforms(modelMatrix, viewMatrix, projectionMatrix);
-
-	setMaterialUniforms(
-		StumpGeometry->ambient,
-		StumpGeometry->diffuse,
-		StumpGeometry->specular,
-		StumpGeometry->shininess,
-		StumpGeometry->texture
-		);
-
-	glBindVertexArray(StumpGeometry->vertexArrayObject);
-	glDrawElements(GL_TRIANGLES, StumpGeometry->numTriangles * 3, GL_UNSIGNED_INT, 0);
 
 	glBindVertexArray(0);
 	glUseProgram(0);
@@ -1168,12 +1128,6 @@ void initializeModels() {
   }
   CHECK_GL_ERROR();
 
-  // load stump model from external file
-  if (loadSingleMesh(STUMP_MODEL_NAME, shaderProgram, &StumpGeometry) != true) {
-	  std::cerr << "initializeModels(): Stump model loading failed." << std::endl;
-  }
-  CHECK_GL_ERROR();
-
   // fill MeshGeometry structure for smoke object
   initSmokeGeometry(AniTexShaderProgram.program, &SmokeGeometry);
 
@@ -1204,7 +1158,6 @@ void cleanupModels() {
   cleanupGeometry(PigGeometry);
   cleanupGeometry(BatGeometry);
   cleanupGeometry(TreeGeometry);
-  cleanupGeometry(StumpGeometry);
 
   cleanupGeometry(SmokeGeometry);
   cleanupGeometry(CloudGeometry);

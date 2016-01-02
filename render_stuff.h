@@ -66,14 +66,13 @@ void drawPodloubi(bartovra::Object* Podloubi, int stencilNum, const glm::mat4 & 
 void drawChapel(bartovra::Object* Chapel, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
 void drawFountain(bartovra::Object* Fountain, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
 void drawWindmill(bartovra::Object* Windmill, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
-void drawFence(bartovra::Object* Fence, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
+void drawFence(bartovra::Object* Fence, int stencislNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
 void drawCross(bartovra::Object* Cross, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
 void drawBase(bartovra::Object* Base, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
 void drawPig(bartovra::Object* Pig, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
 void drawPigCurve(bartovra::Object* PigCurve, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
 void drawBat(bartovra::Object* Bat, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
-void drawTree(bartovra::Object* Tree, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
-void drawStump(bartovra::Object* Stump, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
+void drawTree(bartovra::Object* Tree_leaves, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
 
 void drawSmoke(bartovra::AniTex* smoke, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
 void drawCloud(bartovra::MovTex* Cloud, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);

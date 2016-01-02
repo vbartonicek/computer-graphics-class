@@ -60,8 +60,10 @@ struct SceneObjects {
   bartovra::Object *Pig;
   bartovra::Object *Pig2;
   bartovra::Object *Bat;
-  bartovra::Object *Tree;
-  bartovra::Object *Stump;
+
+  bartovra::Object *Tree_1;
+  bartovra::Object *Tree_2;
+  bartovra::Object *Tree_3;
 
   bartovra::Object *Fence1;
   bartovra::Object *Fence2;
@@ -111,7 +113,7 @@ struct camera {
 
 void cleanUpObjects(void) {
 }
-
+\
 
 
 void reDefineCamera(){
@@ -198,7 +200,10 @@ void restartScene(void) {
   if(SceneObjects.Fence8 == NULL) SceneObjects.Fence8 = new bartovra::Object(glm::vec3(1.12f, 0.13f, -0.63f),90.0f,0.12f,SceneState.elapsedTime);
   if(SceneObjects.Fence9 == NULL) SceneObjects.Fence9 = new bartovra::Object(glm::vec3(1.12f, 0.13f, -0.40f),90.0f,0.12f,SceneState.elapsedTime);//at pub
   if(SceneObjects.Cross == NULL) SceneObjects.Cross = new bartovra::Object(glm::vec3(0.15f, 0.10f, -0.73f), 90.0f, 0.05f, SceneState.elapsedTime);
-  if (SceneObjects.Stump == NULL) SceneObjects.Stump= new bartovra::Object(glm::vec3(-0.05f, 0.14f, 3.0f), -90.0f, 0.05f, SceneState.elapsedTime);
+
+  if (SceneObjects.Tree_1 == NULL) SceneObjects.Tree_1 = new bartovra::Object(glm::vec3(-0.8f, 0.47f, -0.65f), -90.0f, 0.42f, SceneState.elapsedTime);
+  if (SceneObjects.Tree_2 == NULL) SceneObjects.Tree_2 = new bartovra::Object(glm::vec3(1.12f, 0.47f, -1.6f), -90.0f, 0.42f, SceneState.elapsedTime);
+  if (SceneObjects.Tree_3 == NULL) SceneObjects.Tree_3 = new bartovra::Object(glm::vec3(-1.15f, 0.47f, -0.20f), -90.0f, 0.42f, SceneState.elapsedTime);
   
   if(SceneObjects.Base == NULL) SceneObjects.Base = new bartovra::Object(glm::vec3(0.15f, 0.05f, 0.0f),90.0f,5.0f,SceneState.elapsedTime);
   
@@ -210,8 +215,7 @@ void restartScene(void) {
   if(SceneObjects.Smoke2 == NULL) SceneObjects.Smoke2 = new bartovra::AniTex(glm::vec3(-1.15f, 0.72f, 0.85f),0.1f,9,0.2f,SceneState.elapsedTime);//pub
   if(SceneObjects.Smoke3 == NULL) SceneObjects.Smoke3 = new bartovra::AniTex(glm::vec3(1.35f, 0.98f, 1.40f),0.1f,9,0.2f,SceneState.elapsedTime);//podloubi
 
-  if (SceneObjects.Cloud == NULL) SceneObjects.Cloud = new bartovra::MovTex(glm::vec3(0.15f, 5.00f, -5.5f), 4.0f, SceneState.elapsedTime);
-  if (SceneObjects.Tree == NULL) SceneObjects.Tree = new bartovra::Object(glm::vec3(1.12f, 0.42f, -1.6f), 0.0f, 0.5f, SceneState.elapsedTime);
+  if (SceneObjects.Cloud == NULL) SceneObjects.Cloud = new bartovra::MovTex(glm::vec3(0.25f, 5.00f, -5.5f), 4.0f, SceneState.elapsedTime);
 
 }
 
@@ -362,8 +366,8 @@ void drawWindowContents() {
   SceneObjects.Pig->setDirectionY(0.2f);
 
   //uniforms for spotlight
-  glUniform3fv(shaderProgram.reflectorPositionLocation, 1, glm::value_ptr(glm::vec3(0.15f, 0.10f, -0.73f)));
-  glUniform3fv(shaderProgram.reflectorDirectionLocation, 1, glm::value_ptr(glm::vec3(0.15f, 0.10f, -1.73f)));
+  glUniform3fv(shaderProgram.reflectorPositionLocation, 1, glm::value_ptr(glm::vec3(0.0f, 2.0f, 0.0f)));
+  glUniform3fv(shaderProgram.reflectorDirectionLocation, 1, glm::value_ptr(glm::vec3(0.0f, 0.0f, 0.0f)));
   glUseProgram(0);
 
   // draw objects
@@ -378,7 +382,9 @@ void drawWindowContents() {
   drawCross(SceneObjects.Cross,PICKING_CROSS, camera.viewMatrix, camera.projectionMatrix);
   drawBase(SceneObjects.Base,PICKING_BASE, camera.viewMatrix, camera.projectionMatrix);
   drawBat(SceneObjects.Bat, PICKING_BAT, camera.viewMatrix, camera.projectionMatrix);
-  drawStump(SceneObjects.Stump, PICKING_STUMP, camera.viewMatrix, camera.projectionMatrix);
+  drawTree(SceneObjects.Tree_1, PICKING_TREE_1, camera.viewMatrix, camera.projectionMatrix);
+  drawTree(SceneObjects.Tree_2, PICKING_TREE_2, camera.viewMatrix, camera.projectionMatrix);
+  drawTree(SceneObjects.Tree_3, PICKING_TREE_3, camera.viewMatrix, camera.projectionMatrix);
 
   drawFence(SceneObjects.Fence1,PICKING_FENCE_1, camera.viewMatrix, camera.projectionMatrix);
   drawFence(SceneObjects.Fence2,PICKING_FENCE_2, camera.viewMatrix, camera.projectionMatrix);
@@ -399,8 +405,6 @@ void drawWindowContents() {
   // draw PGRskybox
   PGRdrawSkybox(camera.viewMatrix, camera.projectionMatrix);
 
-  drawTree(SceneObjects.Tree, PICKING_TREE, camera.viewMatrix, camera.projectionMatrix);
-
   //draw clouds
   if (SceneState.cloud_on_off==true)drawCloud(SceneObjects.Cloud,PICKING_CLOUD_1, camera.viewMatrix, camera.projectionMatrix);
 
@@ -412,6 +416,7 @@ void drawWindowContents() {
   drawSmoke(SceneObjects.Smoke3,PICKING_SMOKE_3, camera.viewMatrix, camera.projectionMatrix);  
   //glEnable(GL_DEPTH_TEST);
   }
+
 }
 
 // Called to update the display. You should call glutSwapBuffers after all of your
@@ -541,8 +546,9 @@ void initializeApplication() {
   SceneObjects.Pig = NULL;
   SceneObjects.Pig2 = NULL;
   SceneObjects.Bat = NULL;
-  SceneObjects.Tree = NULL;
-  SceneObjects.Stump = NULL;
+  SceneObjects.Tree_1 = NULL;
+  SceneObjects.Tree_2 = NULL;
+  SceneObjects.Tree_3 = NULL;
 
 
   SceneObjects.Smoke1 = NULL;
@@ -670,20 +676,24 @@ void specialKeyboardUnpressedCallback(int specKeyPressed, int mouseX, int mouseY
 void menuHandler(int option)
 {
 	std::cout << "Menu Handler called" << std::endl;
-	switch(option)
+	switch (option)
 	{
 	case WINDMILL_VIEW:
-		SceneState.cameraType=WINDMILL_VIEW;
-		camera.move=false;
+		SceneState.cameraType = WINDMILL_VIEW;
+		camera.move = false;
 		camera.firstPersonMode = false;
 		reDefineCamera();
+		glutPostRedisplay();
+		drawWindowContents();
 		break;
 
 	case GRAVEYARD_VIEW:
-		SceneState.cameraType=GRAVEYARD_VIEW;
-		camera.move=false;
+		SceneState.cameraType = GRAVEYARD_VIEW;
+		camera.move = false;
 		camera.firstPersonMode = false;
 		reDefineCamera();
+		glutPostRedisplay();
+		drawWindowContents();
 		break;
 
 	case FREE_CAMERA:
@@ -691,6 +701,8 @@ void menuHandler(int option)
 		camera.move=true;
 		camera.firstPersonMode = false;
 		reDefineCamera();
+		glutPostRedisplay();
+		drawWindowContents();
 		break;
 
 	case FREE_FIRST_PERSON_CAMERA:
@@ -698,6 +710,8 @@ void menuHandler(int option)
 		camera.move=true;
 		camera.firstPersonMode = true;
 		reDefineCamera();
+		glutPostRedisplay();
+		drawWindowContents();
 		break;
 
 	case CURVE_VIEW:
@@ -706,50 +720,71 @@ void menuHandler(int option)
 		camera.move=false;
 		camera.firstPersonMode = false;
 		reDefineCamera();
+		glutPostRedisplay();
+		drawWindowContents();
 		break;
 
 	case SMOKE_ON_OFF:
-		SceneState.smoke_on_off=!SceneState.smoke_on_off;
+		SceneState.smoke_on_off = !SceneState.smoke_on_off;
+		glutPostRedisplay();
+		drawWindowContents();
 		break;
 
 	case FOG_ON_OFF:
 		if(SceneState.fogOnOff==0){SceneState.fogOnOff=1;SceneState.smoke_on_off=false;}
-		else {SceneState.fogOnOff=0;SceneState.smoke_on_off=true;}
+		else { SceneState.fogOnOff = 0; SceneState.smoke_on_off = true; }
+		glutPostRedisplay();
+		drawWindowContents();
 		break;
 
 	case FOG_LINEAR:
 		if(SceneState.fogOnOff==0)SceneState.fogOnOff=1;
 		SceneState.fogType=1;
 		if (SceneState.fogOnOff==1)SceneState.smoke_on_off=false;
-		else SceneState.smoke_on_off=true;
+		else SceneState.smoke_on_off = true;
+		glutPostRedisplay();
+		drawWindowContents();
 		break;
 
 	case FOG_EXPONENTIAL:
 		if(SceneState.fogOnOff==0)SceneState.fogOnOff=1;
 		SceneState.fogType=2;
 		if (SceneState.fogOnOff==1)SceneState.smoke_on_off=false;
-		else SceneState.smoke_on_off=true;
+		else SceneState.smoke_on_off = true;
+		glutPostRedisplay();
+		drawWindowContents();
 		break;
 
 	case FOG_TIME:
 		SceneState.fogTime=!SceneState.fogTime;
 		if (SceneState.fogTime==true)SceneState.smoke_on_off=false;
-		else SceneState.smoke_on_off=true;
+		else SceneState.smoke_on_off = true;
+		glutPostRedisplay();
+		drawWindowContents();
 		break;
 
 	case SUN_ON_OFF:
-		SceneState.sunOnOff=!SceneState.sunOnOff;
+		SceneState.sunOnOff = !SceneState.sunOnOff;
+		glutPostRedisplay();
+		drawWindowContents();
 		break;
 
 	case POINT_ON_OFF:
-		SceneState.pointOnOff=!SceneState.pointOnOff;
+		SceneState.pointOnOff = !SceneState.pointOnOff;
+		glutPostRedisplay();
+		drawWindowContents();
 		break;
 
 	case CLOUD_ON_OFF:
-		SceneState.cloud_on_off=!SceneState.cloud_on_off;
+		SceneState.cloud_on_off = !SceneState.cloud_on_off;
+		glutPostRedisplay();
+		drawWindowContents();
 		break;
 
 	}
+
+	glutPostRedisplay();
+	drawWindowContents();
 }
 
 void createMenu()
@@ -867,6 +902,9 @@ void onMouseCallback(int button, int state, int x, int y)
 	{
 	case GLUT_LEFT_BUTTON:
 		if(state == GLUT_DOWN) doPicking(button, x, glutGet(GLUT_WINDOW_HEIGHT) - 1 - y);
+		break;
+	case GLUT_RIGHT_BUTTON:
+		glutPostRedisplay();
 		break;
 	}
 	glutPostRedisplay();

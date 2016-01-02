@@ -62,7 +62,7 @@ vec4 fogEffect(vec4 color) {
 	float fogSpeed= 0.25;	//fog speed
 	vec4 outputColor;
 
-	fogDistance = abs(viewSpace.z);
+	fogDistance = abs(viewSpace.z); //brat vzdalenost od kamery
 
 	if (fog.fogOnOff==1){
 
