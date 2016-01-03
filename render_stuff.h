@@ -58,6 +58,16 @@ typedef struct _commonShaderProgram {
 	GLint sunOnOffLocation;	
 	GLint pointOnOffLocation;
 	GLint spotOnOffLocation;
+
+	//spot light
+	GLint spotAmbientLocation;
+	GLint spotDiffuseLocation;
+	GLint spotSpecularLocation;
+	GLint spotCosCutOffLocation;
+	GLint spotExponentLocation;
+	GLint spotPositionLocation;
+	GLint spotDirectionLocation;
+
 	// sun 
 	GLint sunAmbientLocation;
 	GLint sunDiffuseLocation;
@@ -93,5 +103,6 @@ void initializeModels();
 void cleanupModels();
 
 void setFogUniforms(int fogOnOff,int fogType,bool fogTime);
-void setLightUniforms(bool sunOnOff, bool pointOnOff, bool spotOnOff, const glm::vec3 &sunAmbient, const glm::vec3 &sunDiffuse, const glm::vec3 &sunSpecular, float sunSpeed);
+void setLightUniforms(bool sunOnOff, bool pointOnOff, bool spotOnOff, const glm::vec3 &sunAmbient, const glm::vec3 &sunDiffuse, const glm::vec3 &sunSpecular, float sunSpeed,
+	const glm::vec3 &spotAmbient, const glm::vec3 &spotDiffuse, const glm::vec3 &spotSpecular, const glm::vec3 &spotPosition, const glm::vec3 &spotDirection, float sunCosCutOff, float sunExponent);
 #endif // __RENDER_STUFF_H

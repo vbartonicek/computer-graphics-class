@@ -47,8 +47,8 @@ const char* BASE_MODEL_NAME = "data/models/ground/ground.obj";
 const char* PIG_MODEL_NAME = "data/models/pig/pig.obj";
 const char* PIG2_MODEL_NAME = "data/models/pig/pig.obj";
 const char* BAT_MODEL_NAME = "data/models/bat/bat.obj";
-const char* TREE_MODEL_NAME = "data/models/tree/Tree_OBJ.obj";
-//const char* TREE_MODEL_NAME = "data/models/bat/bat.obj";
+//const char* TREE_MODEL_NAME = "data/models/tree/Tree_OBJ.obj";
+const char* TREE_MODEL_NAME = "data/models/bat/bat.obj";
 
 //Textures path
 const char* SMOKE_TEXTURE_NAME = "data/textures/smoke/smoke_move_square.png";
@@ -166,12 +166,21 @@ void setFogUniforms(int fogOnOff,int fogType,bool fogTime)
 	glUseProgram(0);
 }
 
-void setLightUniforms(bool sunOnOff, bool pointOnOff, bool spotOnOff, const glm::vec3 &sunAmbient, const glm::vec3 &sunDiffuse, const glm::vec3 &sunSpecular, float sunSpeed)
+void setLightUniforms(bool sunOnOff, bool pointOnOff, bool spotOnOff, const glm::vec3 &sunAmbient, const glm::vec3 &sunDiffuse, const glm::vec3 &sunSpecular, float sunSpeed, 
+	const glm::vec3 &spotAmbient, const glm::vec3 &spotDiffuse, const glm::vec3 &spotSpecular, const glm::vec3 &spotPosition, const glm::vec3 &spotDirection, float spotCosCutOff, float spotExponent)
 {
 	glUseProgram(shaderProgram.program);
 	glUniform1i(shaderProgram.sunOnOffLocation,sunOnOff);
 	glUniform1i(shaderProgram.pointOnOffLocation, pointOnOff);
 	glUniform1i(shaderProgram.spotOnOffLocation, spotOnOff);
+
+	glUniform3fv(shaderProgram.spotAmbientLocation, 1, glm::value_ptr(spotAmbient));  // 2nd parameter must be 1 - it declares number of vectors in the vector array
+	glUniform3fv(shaderProgram.spotDiffuseLocation, 1, glm::value_ptr(spotDiffuse));
+	glUniform3fv(shaderProgram.spotSpecularLocation, 1, glm::value_ptr(spotSpecular));
+	glUniform3fv(shaderProgram.spotPositionLocation, 1, glm::value_ptr(spotPosition));
+	glUniform3fv(shaderProgram.spotDirectionLocation, 1, glm::value_ptr(spotDirection));
+	glUniform1f(shaderProgram.spotCosCutOffLocation, spotCosCutOff);
+	glUniform1f(shaderProgram.spotExponentLocation, spotExponent);
 
 	glUniform3fv(shaderProgram.sunAmbientLocation, 1, glm::value_ptr(sunAmbient));  // 2nd parameter must be 1 - it declares number of vectors in the vector array
 	glUniform3fv(shaderProgram.sunDiffuseLocation, 1, glm::value_ptr(sunDiffuse));
@@ -709,6 +718,15 @@ void initializeShaderPrograms(void) {
 		shaderProgram.sunOnOffLocation			= glGetUniformLocation(shaderProgram.program, "sunOnOff");
 		shaderProgram.pointOnOffLocation = glGetUniformLocation(shaderProgram.program, "pointOnOff");
 		shaderProgram.spotOnOffLocation = glGetUniformLocation(shaderProgram.program, "spotOnOff");
+
+		// spot light
+		shaderProgram.spotAmbientLocation = glGetUniformLocation(shaderProgram.program, "spotAmbient");
+		shaderProgram.spotDiffuseLocation = glGetUniformLocation(shaderProgram.program, "spotDiffuse");
+		shaderProgram.spotSpecularLocation = glGetUniformLocation(shaderProgram.program, "spotSpecular");
+		shaderProgram.spotPositionLocation = glGetUniformLocation(shaderProgram.program, "spotPosition");
+		shaderProgram.spotDirectionLocation = glGetUniformLocation(shaderProgram.program, "spotDirection");
+		shaderProgram.spotCosCutOffLocation = glGetUniformLocation(shaderProgram.program, "spotCosCutOff");
+		shaderProgram.spotExponentLocation = glGetUniformLocation(shaderProgram.program, "spotExponent");
 
 		// sun
 		shaderProgram.sunAmbientLocation = glGetUniformLocation(shaderProgram.program, "sunAmbient");

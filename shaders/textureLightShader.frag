@@ -21,14 +21,10 @@ struct Light {         // structure describing light parameters
   vec3  specular;      // intensity & color of the specular component
   vec3  position;      // light position
 
-  vec3  pointDirection; // pointlight direction
-  float pointCosCutOff; // cosine of the pointlight's half angle
-  float pointExponent;  // distribution of the light energy within the reflector's cone (center->cone's edge)
+  vec3  Direction; // light direction
+  float CosCutOff; // cosine of the light's half angle
+  float Exponent;  // distribution of the light energy within the reflector's cone (center->cone's edge)
 
-
-  vec3  spotDirection; // spotlight direction
-  float spotCosCutOff; // cosine of the spottlight's half angle
-  float spotExponent;  // distribution of the light energy within the reflector's cone (center->cone's edge)
 };
 
 uniform sampler2D texSampler;  // sampler for the texture access
@@ -45,6 +41,14 @@ uniform Fog fog; //fog data
 uniform bool sunOnOff;
 uniform bool pointOnOff;
 uniform bool spotOnOff;
+
+uniform vec3 spotAmbient;
+uniform vec3 spotDiffuse;
+uniform vec3 spotSpecular;
+uniform float spotCosCutOff;
+uniform float spotExponent;
+uniform vec3 spotPosition;
+uniform vec3 spotDirection;
 
 uniform vec3 sunAmbient;
 uniform vec3 sunDiffuse;
@@ -98,17 +102,13 @@ Light spot;
 
 // Spot light setup
 void setSpotLight(){
-	spot.ambient = vec3(0.0f);
-	spot.diffuse = vec3(1.0f, 1.0f, 0.0f);
-	spot.specular = vec3(0.0f);
-	spot.spotCosCutOff = 5.0f;
-	spot.spotExponent = 5.0f;
-
-	//spot.position = (Vmatrix * vec4(reflectorPosition, 1.0f)).xyz;
-	//spot.spotDirection = normalize((Vmatrix * vec4(reflectorDirection, 0.0f)).xyz);
-
-	spot.position = glm::vec3(-0.1f, 0.5f, 0.0f);
-	spot.spotDirection = glm::vec3(-0.1f, 0.5f, -1.0f);
+	spot.ambient = spotAmbient;
+	spot.diffuse = spotDiffuse;
+	spot.specular = spotSpecular;
+	spot.CosCutOff = spotCosCutOff;
+	spot.Exponent = spotExponent;
+	spot.position = spotPosition;
+	spot.Direction = spotDirection;
 }
 
 // Point light setup
@@ -116,11 +116,11 @@ void setCameraLight(){
   camera.ambient       = vec3(0.4f);
   camera.diffuse       = vec3(1.0f, 0.0f, 0.0f);
   camera.specular      = vec3(1.0f);
-  camera.pointCosCutOff = 0.95f;
-  camera.pointExponent  = 0.0f;
+  camera.CosCutOff = 0.95f;
+  camera.Exponent  = 0.0f;
 
   camera.position = (Vmatrix * vec4(reflectorPosition, 1.0f)).xyz;
-  camera.pointDirection = normalize((Vmatrix * vec4(reflectorDirection, 0.0f)).xyz);
+  camera.Direction = normalize((Vmatrix * vec4(reflectorDirection, 0.0f)).xyz);
 }
 
 // Sun light setup
@@ -139,7 +139,7 @@ vec4 spotLight(Light light, Material material, vec3 vertexPosition, vec3 vertexN
 {
 	vec3 ret = vec3(0.0f);
 	vec3 newLight_position = (Vmatrix * vec4(light.position, 1.0f)).xyz;
-	vec3 newLight_direction = normalize((Vmatrix * vec4(light.spotDirection, 0.0f)).xyz);
+	vec3 newLight_direction = normalize((Vmatrix * vec4(light.Direction, 0.0f)).xyz);
 
 	vec3 L = normalize(newLight_position - vertexPosition);
 	vec3 R = reflect(-L, vertexNormal);
@@ -153,7 +153,7 @@ vec4 spotLight(Light light, Material material, vec3 vertexPosition, vec3 vertexN
 	ret += material.diffuse * light.diffuse * NdotL;
 	ret += material.specular * light.specular * pow(RdotV, material.shininess);
 
-	ret *= pow(spotCoef, light.spotExponent);
+	ret *= pow(spotCoef, light.Exponent);
 
 	return vec4(ret, 1.0f);
 }

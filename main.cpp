@@ -12,6 +12,9 @@
 #include "pgr.h"
 #include "render_stuff.h"
 #include "spline.h"
+#include <sstream>
+#include <fstream>
+#include <regex>\
 
 extern SCommonShaderProgram shaderProgram;
 extern bool useLighting;
@@ -48,6 +51,16 @@ struct SceneState {
   bool fence9Draw;
   bool pigCurveDraw;
 
+  //spot light
+  glm::vec3 spotAmbient;
+  glm::vec3 spotDiffuse;
+  glm::vec3 spotSpecular;
+  glm::vec3 spotPosition;
+  glm::vec3 spotDirection;
+  float spotCosCutOff;
+  float spotExponent;
+
+  //sun light
   glm::vec3 sunAmbient;
   glm::vec3 sunDiffuse;
   glm::vec3 sunSpecular;
@@ -174,6 +187,16 @@ void restartScene(void) {
   SceneState.sunOnOff=true;
   SceneState.spotOnOff = false;
 
+  // spot light
+  SceneState.spotAmbient = glm::vec3(0.0f);
+  SceneState.spotDiffuse = glm::vec3(1.0f, 1.0f, 0.0f);
+  SceneState.spotSpecular = glm::vec3(0.0f);
+  SceneState.spotPosition = glm::vec3(-0.1f, 0.5f, 0.0f);
+  SceneState.spotDirection = glm::vec3(-0.1f, 0.5f, -1.0f);
+  SceneState.spotCosCutOff = 5.0f;
+  SceneState.spotExponent = 5.0f;
+
+  // sun light
   SceneState.sunAmbient = glm::vec3(0.5f, 0.5f, 0.5f);
   SceneState.sunDiffuse = glm::vec3(1.0f, 1.0f, 0.5f);
   SceneState.sunSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -381,7 +404,8 @@ void drawWindowContents() {
   setFogUniforms(SceneState.fogOnOff,SceneState.fogType,SceneState.fogTime);
 
   //Lightuniforms
-  setLightUniforms(SceneState.sunOnOff, SceneState.pointOnOff, SceneState.spotOnOff, SceneState.sunAmbient, SceneState.sunDiffuse, SceneState.sunSpecular, SceneState.sunSpeed);
+  setLightUniforms(SceneState.sunOnOff, SceneState.pointOnOff, SceneState.spotOnOff, SceneState.sunAmbient, SceneState.sunDiffuse, SceneState.sunSpecular, SceneState.sunSpeed,
+	  SceneState.spotAmbient, SceneState.spotDiffuse, SceneState.spotSpecular, SceneState.spotPosition, SceneState.spotDirection, SceneState.spotCosCutOff, SceneState.spotExponent);
 
 
   SceneObjects.Pig->setDirectionY(0.2f);
@@ -548,6 +572,16 @@ void initializeApplication() {
   SceneState.fogTime=false;
   SceneState.cloud_on_off = false;//true=on
 
+  // spot light
+  SceneState.spotAmbient = glm::vec3(0.0f);
+  SceneState.spotDiffuse = glm::vec3(1.0f, 1.0f, 0.0f);
+  SceneState.spotSpecular = glm::vec3(0.0f);
+  SceneState.spotPosition = glm::vec3(-0.1f, 0.5f, 0.0f);
+  SceneState.spotDirection = glm::vec3(-0.1f, 0.5f, -1.0f);
+  SceneState.spotCosCutOff = 5.0f;
+  SceneState.spotExponent = 5.0f;
+
+  // sun light
   SceneState.sunAmbient = glm::vec3(0.5f,0.5f,0.5f);
   SceneState.sunDiffuse = glm::vec3(1.0f, 1.0f, 0.5f);
   SceneState.sunSpecular = glm::vec3(1.0f,1.0f,1.0f);
@@ -609,6 +643,56 @@ void finalizeApplication(void) {
 }
 
 
+// load configuration file
+void loadConfigFile()
+{
+	std::ifstream file(CONFIGURATION_FILE);
+	std::string line;
+
+	std::regex rgx("^(.+)=(.+)");
+	std::smatch match;
+
+	if (file)
+	{
+		std::cout << "Config file loaded." << std::endl;
+
+		while (std::getline(file, line))
+		{
+			if (std::regex_search(line, match, rgx))
+			{
+				std::string keyMatched = match[1];
+				std::string valueMatched = match[2];
+				std::stringstream trimmer;
+
+				//trim white spaces
+				trimmer << keyMatched;
+				keyMatched.clear();
+				trimmer >> keyMatched;
+				trimmer.clear();
+
+				//trim white spaces
+				trimmer << valueMatched;
+				valueMatched.clear();
+				trimmer >> valueMatched;
+				trimmer.clear();
+
+				std::cout << keyMatched << "=" << valueMatched << '\n';
+
+				if (keyMatched == "SPOT_LIGHT_COLOR_R") SceneState.spotDiffuse.x = stof(valueMatched);
+				else if (keyMatched == "SPOT_LIGHT_COLOR_G") SceneState.spotDiffuse.y = stof(valueMatched);
+				else if (keyMatched == "SPOT_LIGHT_COLOR_B") SceneState.spotDiffuse.z = stof(valueMatched);
+				else printf("Unrecognized key pressed\n");
+			}
+			else
+				pgr::dieWithError("Config format is incorrect, check the syntax.");
+		}
+	}
+	else
+		pgr::dieWithError("Cannot load file. Incorrect filename?");
+
+
+}
+
 // Called whenever a key on the keyboard was pressed. The key is given by the ''key''
 // parameter, which is in ASCII. It's often a good idea to have the escape key
 // (ASCII value 27) call glutLeaveMainLoop() to exit the program.
@@ -618,6 +702,11 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
     case 27:
       glutLeaveMainLoop();
       break;
+	case 'c': // load config file
+		printf("Key C pressed.\n");
+		loadConfigFile();
+		drawWindowContents();
+		break;
 	case 'r': // Restart
 	  printf("Key R pressed.\n");
 	  restartScene();
@@ -909,7 +998,8 @@ void doPicking(int button, int x, int y)
 			SceneState.spotOnOff = !SceneState.spotOnOff;
 			break;
 		case PICKING_PIG_CURVE:
-			SceneState.pigCurveDraw=false;
+			SceneState.pigCurveDraw = false;
+			SceneState.spotOnOff = true;
 			break;
 
 		case PICKING_SMOKE_1:
@@ -974,7 +1064,6 @@ void onMousePassiveCallback(int mouseX, int mouseY)
 	}
 	glutPostRedisplay();
 }
-
 
 int main(int argc, char** argv) {
 

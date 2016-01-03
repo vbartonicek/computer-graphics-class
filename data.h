@@ -16,6 +16,8 @@
 #define WINDOW_HEIGHT  768//600
 #define WINDOW_TITLE   "Semestralka"
 
+#define CONFIGURATION_FILE "config.txt"
+
 #define SCENE_WIDTH  1.0f
 #define SCENE_HEIGHT 1.0f
 #define SCENE_DEPTH  1.0f
