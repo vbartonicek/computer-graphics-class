@@ -31,6 +31,7 @@ struct SceneState {
 
   bool sunOnOff;
   bool pointOnOff;
+  bool spotOnOff;
 
   bool smoke_on_off;
   bool cloud_on_off;
@@ -46,6 +47,11 @@ struct SceneState {
   bool fence8Draw;
   bool fence9Draw;
   bool pigCurveDraw;
+
+  glm::vec3 sunAmbient;
+  glm::vec3 sunDiffuse;
+  glm::vec3 sunSpecular;
+  float sunSpeed;
 
 
 } SceneState;
@@ -64,6 +70,10 @@ struct SceneObjects {
   bartovra::Object *Tree_1;
   bartovra::Object *Tree_2;
   bartovra::Object *Tree_3;
+  bartovra::Object *Tree_4;
+  bartovra::Object *Tree_5;
+  bartovra::Object *Tree_6;
+  bartovra::Object *Tree_7;
 
   bartovra::Object *Fence1;
   bartovra::Object *Fence2;
@@ -159,8 +169,15 @@ void restartScene(void) {
   SceneState.fogType = 1;//1=linear, 2=exponential
   SceneState.fogTime=false;
 
+  useLighting = true;
+
   SceneState.sunOnOff=true;
-  SceneState.sunOnOff=false;
+  SceneState.spotOnOff = false;
+
+  SceneState.sunAmbient = glm::vec3(0.5f, 0.5f, 0.5f);
+  SceneState.sunDiffuse = glm::vec3(1.0f, 1.0f, 0.5f);
+  SceneState.sunSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
+  SceneState.sunSpeed = 0.25f;
 
   SceneState.fence4Draw = true;
   SceneState.fence5Draw = true;
@@ -201,9 +218,13 @@ void restartScene(void) {
   if(SceneObjects.Fence9 == NULL) SceneObjects.Fence9 = new bartovra::Object(glm::vec3(1.12f, 0.13f, -0.40f),90.0f,0.12f,SceneState.elapsedTime);//at pub
   if(SceneObjects.Cross == NULL) SceneObjects.Cross = new bartovra::Object(glm::vec3(0.15f, 0.10f, -0.73f), 90.0f, 0.05f, SceneState.elapsedTime);
 
-  if (SceneObjects.Tree_1 == NULL) SceneObjects.Tree_1 = new bartovra::Object(glm::vec3(-0.8f, 0.47f, -0.65f), -90.0f, 0.42f, SceneState.elapsedTime);
-  if (SceneObjects.Tree_2 == NULL) SceneObjects.Tree_2 = new bartovra::Object(glm::vec3(1.12f, 0.47f, -1.6f), -90.0f, 0.42f, SceneState.elapsedTime);
-  if (SceneObjects.Tree_3 == NULL) SceneObjects.Tree_3 = new bartovra::Object(glm::vec3(-1.15f, 0.47f, -0.20f), -90.0f, 0.42f, SceneState.elapsedTime);
+  if(SceneObjects.Tree_1 == NULL) SceneObjects.Tree_1 = new bartovra::Object(glm::vec3(-0.8f, 0.47f, -0.65f), -90.0f, 0.42f, SceneState.elapsedTime);
+  if(SceneObjects.Tree_2 == NULL) SceneObjects.Tree_2 = new bartovra::Object(glm::vec3(1.12f, 0.47f, -1.6f), -90.0f, 0.42f, SceneState.elapsedTime);
+  if(SceneObjects.Tree_3 == NULL) SceneObjects.Tree_3 = new bartovra::Object(glm::vec3(-1.15f, 0.47f, -0.20f), -90.0f, 0.42f, SceneState.elapsedTime);
+  if(SceneObjects.Tree_4 == NULL) SceneObjects.Tree_4 = new bartovra::Object(glm::vec3(-1.4f, 0.47f, -0.75f), -90.0f, 0.55f, SceneState.elapsedTime);
+  if(SceneObjects.Tree_5 == NULL) SceneObjects.Tree_5 = new bartovra::Object(glm::vec3(0.7f, 0.47f, -1.8f), -90.0f, 0.46f, SceneState.elapsedTime);
+  if(SceneObjects.Tree_6 == NULL) SceneObjects.Tree_6 = new bartovra::Object(glm::vec3(1.17f, 0.47f, -1.0f), -90.0f, 0.42f, SceneState.elapsedTime);
+  if(SceneObjects.Tree_7 == NULL) SceneObjects.Tree_7 = new bartovra::Object(glm::vec3(1.19f, 0.4f, -0.65f), -90.0f, 0.35f, SceneState.elapsedTime);
   
   if(SceneObjects.Base == NULL) SceneObjects.Base = new bartovra::Object(glm::vec3(0.15f, 0.05f, 0.0f),90.0f,5.0f,SceneState.elapsedTime);
   
@@ -360,7 +381,7 @@ void drawWindowContents() {
   setFogUniforms(SceneState.fogOnOff,SceneState.fogType,SceneState.fogTime);
 
   //Lightuniforms
-  setLightUniforms(SceneState.sunOnOff,SceneState.pointOnOff);
+  setLightUniforms(SceneState.sunOnOff, SceneState.pointOnOff, SceneState.spotOnOff, SceneState.sunAmbient, SceneState.sunDiffuse, SceneState.sunSpecular, SceneState.sunSpeed);
 
 
   SceneObjects.Pig->setDirectionY(0.2f);
@@ -385,6 +406,10 @@ void drawWindowContents() {
   drawTree(SceneObjects.Tree_1, PICKING_TREE_1, camera.viewMatrix, camera.projectionMatrix);
   drawTree(SceneObjects.Tree_2, PICKING_TREE_2, camera.viewMatrix, camera.projectionMatrix);
   drawTree(SceneObjects.Tree_3, PICKING_TREE_3, camera.viewMatrix, camera.projectionMatrix);
+  drawTree(SceneObjects.Tree_4, PICKING_TREE_4, camera.viewMatrix, camera.projectionMatrix);
+  drawTree(SceneObjects.Tree_5, PICKING_TREE_5, camera.viewMatrix, camera.projectionMatrix);
+  drawTree(SceneObjects.Tree_6, PICKING_TREE_6, camera.viewMatrix, camera.projectionMatrix);
+  drawTree(SceneObjects.Tree_7, PICKING_TREE_7, camera.viewMatrix, camera.projectionMatrix);
 
   drawFence(SceneObjects.Fence1,PICKING_FENCE_1, camera.viewMatrix, camera.projectionMatrix);
   drawFence(SceneObjects.Fence2,PICKING_FENCE_2, camera.viewMatrix, camera.projectionMatrix);
@@ -519,8 +544,14 @@ void initializeApplication() {
   useLighting = true;
   SceneState.sunOnOff=true;
   SceneState.pointOnOff=false;
+  SceneState.spotOnOff=false;
   SceneState.fogTime=false;
   SceneState.cloud_on_off = false;//true=on
+
+  SceneState.sunAmbient = glm::vec3(0.5f,0.5f,0.5f);
+  SceneState.sunDiffuse = glm::vec3(1.0f, 1.0f, 0.5f);
+  SceneState.sunSpecular = glm::vec3(1.0f,1.0f,1.0f);
+  SceneState.sunSpeed = 0.25f;
 
   // initialize shaders
   initializeShaderPrograms();
@@ -549,6 +580,10 @@ void initializeApplication() {
   SceneObjects.Tree_1 = NULL;
   SceneObjects.Tree_2 = NULL;
   SceneObjects.Tree_3 = NULL;
+  SceneObjects.Tree_4 = NULL;
+  SceneObjects.Tree_5 = NULL;
+  SceneObjects.Tree_6 = NULL;
+  SceneObjects.Tree_7 = NULL;
 
 
   SceneObjects.Smoke1 = NULL;
@@ -870,7 +905,9 @@ void doPicking(int button, int x, int y)
 			SceneState.fence9Draw=false;
 			break;
 
-
+		case PICKING_FOUNTAIN:
+			SceneState.spotOnOff = !SceneState.spotOnOff;
+			break;
 		case PICKING_PIG_CURVE:
 			SceneState.pigCurveDraw=false;
 			break;

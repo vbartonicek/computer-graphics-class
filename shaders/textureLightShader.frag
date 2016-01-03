@@ -20,9 +20,15 @@ struct Light {         // structure describing light parameters
   vec3  diffuse;       // intensity & color of the diffuse component
   vec3  specular;      // intensity & color of the specular component
   vec3  position;      // light position
+
   vec3  pointDirection; // pointlight direction
   float pointCosCutOff; // cosine of the pointlight's half angle
   float pointExponent;  // distribution of the light energy within the reflector's cone (center->cone's edge)
+
+
+  vec3  spotDirection; // spotlight direction
+  float spotCosCutOff; // cosine of the spottlight's half angle
+  float spotExponent;  // distribution of the light energy within the reflector's cone (center->cone's edge)
 };
 
 uniform sampler2D texSampler;  // sampler for the texture access
@@ -38,6 +44,12 @@ uniform Fog fog; //fog data
 
 uniform bool sunOnOff;
 uniform bool pointOnOff;
+uniform bool spotOnOff;
+
+uniform vec3 sunAmbient;
+uniform vec3 sunDiffuse;
+uniform vec3 sunSpecular;
+uniform float sunSpeed;
 
 smooth in vec3 vertexPosition;	// incoming vertex position
 smooth in vec3 vertexNormal;	// incoming vertex normal
@@ -81,8 +93,23 @@ vec4 fogEffect(vec4 color) {
 
 Light sun;
 Light camera;
+Light spot;
 
 
+// Spot light setup
+void setSpotLight(){
+	spot.ambient = vec3(0.0f);
+	spot.diffuse = vec3(1.0f, 1.0f, 0.0f);
+	spot.specular = vec3(0.0f);
+	spot.spotCosCutOff = 5.0f;
+	spot.spotExponent = 5.0f;
+
+	//spot.position = (Vmatrix * vec4(reflectorPosition, 1.0f)).xyz;
+	//spot.spotDirection = normalize((Vmatrix * vec4(reflectorDirection, 0.0f)).xyz);
+
+	spot.position = glm::vec3(-0.1f, 0.5f, 0.0f);
+	spot.spotDirection = glm::vec3(-0.1f, 0.5f, -1.0f);
+}
 
 // Point light setup
 void setCameraLight(){
@@ -98,15 +125,38 @@ void setCameraLight(){
 
 // Sun light setup
 void setSunLight() {
-  float sunSpeed = 0.25f;
+	float sunSpeed = sunSpeed;
 
-  sun.ambient  = vec3(0.5f);
-  sun.diffuse  = vec3(1.0f, 1.0f, 0.5f);
-  sun.specular = vec3(1.0f);
+	sun.ambient = sunAmbient;
+	sun.diffuse = sunDiffuse;
+	sun.specular = sunSpecular;
 
-  sun.position = (Vmatrix * vec4(cos(time * sunSpeed), 0.0f, sin(time * sunSpeed), 0.0f)).xyz;
+	sun.position = (Vmatrix * vec4(cos(time * sunSpeed), 0.0f, sin(time * sunSpeed), 0.0f)).xyz;
 }
 
+
+vec4 spotLight(Light light, Material material, vec3 vertexPosition, vec3 vertexNormal)
+{
+	vec3 ret = vec3(0.0f);
+	vec3 newLight_position = (Vmatrix * vec4(light.position, 1.0f)).xyz;
+	vec3 newLight_direction = normalize((Vmatrix * vec4(light.spotDirection, 0.0f)).xyz);
+
+	vec3 L = normalize(newLight_position - vertexPosition);
+	vec3 R = reflect(-L, vertexNormal);
+	vec3 V = normalize(-vertexPosition);
+
+	float NdotL = max(0.0f, dot(vertexNormal, L));
+	float RdotV = max(0.0f, dot(R, V));
+	float spotCoef = max(0.0f, dot(-L, newLight_direction));
+
+	ret += material.ambient * light.ambient;
+	ret += material.diffuse * light.diffuse * NdotL;
+	ret += material.specular * light.specular * pow(RdotV, material.shininess);
+
+	ret *= pow(spotCoef, light.spotExponent);
+
+	return vec4(ret, 1.0f);
+}
 
 vec4 pointLight(Light light, Material material, vec3 vertexPosition, vec3 vertexNormal) {
 
@@ -147,14 +197,14 @@ void main() {
 
 	setCameraLight();
 	setSunLight();
+	setSpotLight();
 
   vec3 globalAmbientLight = vec3(0.5f);
   vec4 color = vec4(material.ambient * globalAmbientLight, 0.0f);
 
+  if(spotOnOff == true) color += spotLight(spot, material, vertexPosition, vertexNormal);
   if(sunOnOff==true) color += directionalLight(sun, material, vertexPosition, vertexNormal);
-
-  if(pointOnOff==true) color +=pointLight(camera, material, vertexPosition, vertexNormal);
-
+  if(pointOnOff==true) color += pointLight(camera, material, vertexPosition, vertexNormal);
 
   // if material has a texture -> apply it
   if(material.useTexture) color_f =  color * texture(texSampler, vertexTexCoord);

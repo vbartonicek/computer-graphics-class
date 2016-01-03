@@ -48,6 +48,7 @@ const char* PIG_MODEL_NAME = "data/models/pig/pig.obj";
 const char* PIG2_MODEL_NAME = "data/models/pig/pig.obj";
 const char* BAT_MODEL_NAME = "data/models/bat/bat.obj";
 const char* TREE_MODEL_NAME = "data/models/tree/Tree_OBJ.obj";
+//const char* TREE_MODEL_NAME = "data/models/bat/bat.obj";
 
 //Textures path
 const char* SMOKE_TEXTURE_NAME = "data/textures/smoke/smoke_move_square.png";
@@ -165,11 +166,18 @@ void setFogUniforms(int fogOnOff,int fogType,bool fogTime)
 	glUseProgram(0);
 }
 
-void setLightUniforms(bool sunOnOff, bool pointOnOff)
+void setLightUniforms(bool sunOnOff, bool pointOnOff, bool spotOnOff, const glm::vec3 &sunAmbient, const glm::vec3 &sunDiffuse, const glm::vec3 &sunSpecular, float sunSpeed)
 {
 	glUseProgram(shaderProgram.program);
 	glUniform1i(shaderProgram.sunOnOffLocation,sunOnOff);
-	glUniform1i(shaderProgram.pointOnOffLocation,pointOnOff);
+	glUniform1i(shaderProgram.pointOnOffLocation, pointOnOff);
+	glUniform1i(shaderProgram.spotOnOffLocation, spotOnOff);
+
+	glUniform3fv(shaderProgram.sunAmbientLocation, 1, glm::value_ptr(sunAmbient));  // 2nd parameter must be 1 - it declares number of vectors in the vector array
+	glUniform3fv(shaderProgram.sunDiffuseLocation, 1, glm::value_ptr(sunDiffuse));
+	glUniform3fv(shaderProgram.sunSpecularLocation, 1, glm::value_ptr(sunSpecular));
+	glUniform1f(shaderProgram.sunSpeedLocation,sunSpeed);
+
 	glUseProgram(0);
 }
 
@@ -666,11 +674,8 @@ void initializeShaderPrograms(void) {
 		// load and compile shader for lighting (lights & materials)
 
 		// push vertex shader and fragment shader
-
 		shaderList.push_back(pgr::createShaderFromFile(GL_VERTEX_SHADER, "shaders/textureLightShader.vert"));
 		shaderList.push_back(pgr::createShaderFromFile(GL_FRAGMENT_SHADER, "shaders/textureLightShader.frag"));
-		//shaderList.push_back(pgr::createShaderFromFile(GL_VERTEX_SHADER, "shaders/lightShader.vert"));
-		//shaderList.push_back(pgr::createShaderFromFile(GL_FRAGMENT_SHADER, "shaders/lightShader.frag"));
 
 		// create the program with two shaders
 		shaderProgram.program = pgr::createProgram(shaderList);
@@ -700,9 +705,16 @@ void initializeShaderPrograms(void) {
 		shaderProgram.fogOnOffLocation			= glGetUniformLocation(shaderProgram.program, "fog.fogOnOff");
 		shaderProgram.fogTypeLocation			= glGetUniformLocation(shaderProgram.program, "fog.fogType");
 		shaderProgram.fogTimeLocation			= glGetUniformLocation(shaderProgram.program, "fog.fogTime");
-		//lights
+		// lights
 		shaderProgram.sunOnOffLocation			= glGetUniformLocation(shaderProgram.program, "sunOnOff");
-		shaderProgram.pointOnOffLocation			= glGetUniformLocation(shaderProgram.program, "pointOnOff");
+		shaderProgram.pointOnOffLocation = glGetUniformLocation(shaderProgram.program, "pointOnOff");
+		shaderProgram.spotOnOffLocation = glGetUniformLocation(shaderProgram.program, "spotOnOff");
+
+		// sun
+		shaderProgram.sunAmbientLocation = glGetUniformLocation(shaderProgram.program, "sunAmbient");
+		shaderProgram.sunDiffuseLocation = glGetUniformLocation(shaderProgram.program, "sunDiffuse");
+		shaderProgram.sunSpecularLocation = glGetUniformLocation(shaderProgram.program, "sunSpecular");
+		shaderProgram.sunSpeedLocation = glGetUniformLocation(shaderProgram.program, "sunSpeed");
 
 	}
 	else {
