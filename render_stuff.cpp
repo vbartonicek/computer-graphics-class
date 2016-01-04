@@ -47,8 +47,8 @@ const char* BASE_MODEL_NAME = "data/models/ground/ground.obj";
 const char* PIG_MODEL_NAME = "data/models/pig/pig.obj";
 const char* PIG2_MODEL_NAME = "data/models/pig/pig.obj";
 const char* BAT_MODEL_NAME = "data/models/bat/bat.obj";
-//const char* TREE_MODEL_NAME = "data/models/tree/Tree_OBJ.obj";
-const char* TREE_MODEL_NAME = "data/models/bat/bat.obj";
+const char* TREE_MODEL_NAME = "data/models/tree/Tree_OBJ.obj";
+//const char* TREE_MODEL_NAME = "data/models/bat/bat.obj";
 
 //Textures path
 const char* SMOKE_TEXTURE_NAME = "data/textures/smoke/smoke_move_square.png";

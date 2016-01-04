@@ -649,8 +649,9 @@ void loadConfigFile()
 	std::ifstream file(CONFIGURATION_FILE);
 	std::string line;
 
-	std::regex rgx("^(.+)=(.+)");
+	std::regex regexExp("^(.+)=(.+)");
 	std::smatch match;
+	std::stringstream trimmer;
 
 	if (file)
 	{
@@ -658,19 +659,16 @@ void loadConfigFile()
 
 		while (std::getline(file, line))
 		{
-			if (std::regex_search(line, match, rgx))
+			if (std::regex_search(line, match, regexExp))
 			{
 				std::string keyMatched = match[1];
 				std::string valueMatched = match[2];
-				std::stringstream trimmer;
 
 				//trim white spaces
 				trimmer << keyMatched;
 				keyMatched.clear();
 				trimmer >> keyMatched;
 				trimmer.clear();
-
-				//trim white spaces
 				trimmer << valueMatched;
 				valueMatched.clear();
 				trimmer >> valueMatched;
@@ -705,6 +703,12 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 	case 'c': // load config file
 		printf("Key C pressed.\n");
 		loadConfigFile();
+		drawWindowContents();
+		break;
+	case 's': // smoke on/off
+		printf("Key S pressed.\n");
+		SceneState.smoke_on_off = !SceneState.smoke_on_off;
+		glutPostRedisplay();
 		drawWindowContents();
 		break;
 	case 'r': // Restart
@@ -772,6 +776,50 @@ void specialKeyboardCallback(int specKeyPressed, int mouseX, int mouseY) {
 		camera.move=false;
 		camera.firstPersonMode = false;
 		reDefineCamera();
+		break;
+	case GLUT_KEY_F6: // fog on/off
+		if (SceneState.fogOnOff == 0){ SceneState.fogOnOff = 1; SceneState.smoke_on_off = false; }
+		else { SceneState.fogOnOff = 0; SceneState.smoke_on_off = true; }
+		glutPostRedisplay();
+		drawWindowContents();
+		break;
+	case GLUT_KEY_F7: // set linear fog
+		if (SceneState.fogOnOff == 0)SceneState.fogOnOff = 1;
+		SceneState.fogType = 1;
+		if (SceneState.fogOnOff == 1)SceneState.smoke_on_off = false;
+		else SceneState.smoke_on_off = true;
+		glutPostRedisplay();
+		drawWindowContents();
+		break;
+	case GLUT_KEY_F8: // set exponential fog
+		if (SceneState.fogOnOff == 0)SceneState.fogOnOff = 1;
+		SceneState.fogType = 2;
+		if (SceneState.fogOnOff == 1)SceneState.smoke_on_off = false;
+		else SceneState.smoke_on_off = true;
+		glutPostRedisplay();
+		drawWindowContents();
+		break;
+	case GLUT_KEY_F9: // fog depending on time on/off
+		SceneState.fogTime = !SceneState.fogTime;
+		if (SceneState.fogTime == true)SceneState.smoke_on_off = false;
+		else SceneState.smoke_on_off = true;
+		glutPostRedisplay();
+		drawWindowContents();
+		break;
+	case GLUT_KEY_F10: // sun on/off
+		SceneState.sunOnOff = !SceneState.sunOnOff;
+		glutPostRedisplay();
+		drawWindowContents();
+		break;
+	case GLUT_KEY_F11: // point light on/off
+		SceneState.pointOnOff = !SceneState.pointOnOff;
+		glutPostRedisplay();
+		drawWindowContents();
+		break;
+	case GLUT_KEY_F12: // cloud on/off
+		SceneState.cloud_on_off = !SceneState.cloud_on_off;
+		glutPostRedisplay();
+		drawWindowContents();
 		break;
 
     default:
