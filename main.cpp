@@ -66,6 +66,8 @@ struct SceneState {
   glm::vec3 sunSpecular;
   float sunSpeed;
 
+  bool BohdalkaMode;
+
 
 } SceneState;
 
@@ -74,6 +76,7 @@ struct SceneObjects {
   bartovra::Object *Pub2;
   bartovra::Object *Podloubi;
   bartovra::Object *Chapel;
+  bartovra::Object *Chapel2;
   bartovra::Object *Fountain;
   bartovra::Object *Windmill;
   bartovra::Object *Pig;
@@ -210,6 +213,8 @@ void restartScene(void) {
   SceneState.fence9Draw = true;
   SceneState.pigCurveDraw = true;
 
+  SceneState.BohdalkaMode = false;
+
   SceneState.cameraType=WINDMILL_VIEW;
 
   SceneState.elapsedTime = 0.001f * (float)glutGet(GLUT_ELAPSED_TIME); // milliseconds => seconds
@@ -227,7 +232,8 @@ void restartScene(void) {
   if(SceneObjects.Pub == NULL) SceneObjects.Pub = new bartovra::Object(glm::vec3(-1.1f, 0.36f, 0.7f),90.0f,0.6f,SceneState.elapsedTime);
   if(SceneObjects.Pub2 == NULL) SceneObjects.Pub2 = new bartovra::Object(glm::vec3(1.1f, 0.36f, 0.33f),-63.0f,0.6f,SceneState.elapsedTime);
   if(SceneObjects.Podloubi == NULL) SceneObjects.Podloubi = new bartovra::Object(glm::vec3(1.35f, 0.5f, 1.40f),-100.0f,0.55f,SceneState.elapsedTime);
-  if(SceneObjects.Chapel == NULL) SceneObjects.Chapel = new bartovra::Object(glm::vec3(0.15f, 0.85f, -1.0f),90.0f,0.8f,SceneState.elapsedTime);
+  if (SceneObjects.Chapel == NULL) SceneObjects.Chapel = new bartovra::Object(glm::vec3(0.15f, 0.85f, -1.0f), 90.0f, 0.8f, SceneState.elapsedTime);
+  if (SceneObjects.Chapel2 == NULL) SceneObjects.Chapel2 = new bartovra::Object(glm::vec3(0.15f, 0.85f, -1.0f), 90.0f, 0.8f, SceneState.elapsedTime);
   if(SceneObjects.Fountain == NULL) SceneObjects.Fountain = new bartovra::Object(glm::vec3(-0.05f, 0.14f, 0.9f),0.0f,0.15f,SceneState.elapsedTime);
   if(SceneObjects.Windmill == NULL) SceneObjects.Windmill = new bartovra::Object(glm::vec3(-1.1f, 0.85f, 1.7f),0.0f,0.8f,SceneState.elapsedTime);
   if(SceneObjects.Fence1 == NULL) SceneObjects.Fence1 = new bartovra::Object(glm::vec3(0.55f, 0.13f, -1.65f),0.0f,0.12f,SceneState.elapsedTime);//at chapel
@@ -421,7 +427,14 @@ void drawWindowContents() {
   drawPub(SceneObjects.Pub,PICKING_PUB_1, camera.viewMatrix, camera.projectionMatrix);
   drawPub(SceneObjects.Pub2,PICKING_PUB2, camera.viewMatrix, camera.projectionMatrix);
   drawPodloubi(SceneObjects.Podloubi,PICKING_PODLOUBI, camera.viewMatrix, camera.projectionMatrix);
-  drawChapel(SceneObjects.Chapel,PICKING_CHAPEL, camera.viewMatrix, camera.projectionMatrix);
+  if (!SceneState.pigCurveDraw){
+	  printf("Drawing chapel2\n");
+	  drawChapel2(SceneObjects.Chapel2, PICKING_CHAPEL, camera.viewMatrix, camera.projectionMatrix);
+  }
+  else {
+	  printf("Drawing chapel\n");
+	  drawChapel(SceneObjects.Chapel, PICKING_CHAPEL, camera.viewMatrix, camera.projectionMatrix);
+  }
   drawFountain(SceneObjects.Fountain,PICKING_FOUNTAIN, camera.viewMatrix, camera.projectionMatrix);
   drawWindmill(SceneObjects.Windmill,PICKING_WINDMILL, camera.viewMatrix, camera.projectionMatrix);
   drawCross(SceneObjects.Cross,PICKING_CROSS, camera.viewMatrix, camera.projectionMatrix);
@@ -523,6 +536,11 @@ void updateObjects(float elapsedTime){
 	SceneObjects.Pig2->setPositionY(0.13f);
 	SceneObjects.Pig2->setDirectionX(0.2f);
 
+	if (SceneState.BohdalkaMode){
+		SceneState.spotDiffuse.x = rand() % 2;
+		SceneState.spotDiffuse.y = rand() % 2;
+		SceneState.spotDiffuse.z = rand() % 2;
+	}
 
 	//Camera on curve
 	if(SceneState.cameraType==CURVE_VIEW){
@@ -587,6 +605,9 @@ void initializeApplication() {
   SceneState.sunSpecular = glm::vec3(1.0f,1.0f,1.0f);
   SceneState.sunSpeed = 0.25f;
 
+
+  SceneState.BohdalkaMode = false;
+
   // initialize shaders
   initializeShaderPrograms();
   // create geometry for all models used
@@ -596,6 +617,7 @@ void initializeApplication() {
   SceneObjects.Pub2 = NULL;
   SceneObjects.Podloubi = NULL;
   SceneObjects.Chapel = NULL;
+  SceneObjects.Chapel2 = NULL;
   SceneObjects.Fountain = NULL;
   SceneObjects.Windmill = NULL;
   SceneObjects.Fence1 = NULL;
@@ -703,6 +725,16 @@ void keyboardCallback(unsigned char keyPressed, int mouseX, int mouseY) {
 	case 'c': // load config file
 		printf("Key C pressed.\n");
 		loadConfigFile();
+		drawWindowContents();
+		break;
+	case 'b': // Bohdalka mode on/off
+		printf("Key B pressed.\n");
+		if (!SceneState.pigCurveDraw){
+			SceneState.sunOnOff = false;
+			SceneState.spotOnOff = true;
+			SceneState.BohdalkaMode = !SceneState.BohdalkaMode;
+		}
+		glutPostRedisplay();
 		drawWindowContents();
 		break;
 	case 's': // smoke on/off

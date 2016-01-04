@@ -81,6 +81,7 @@ typedef struct _commonShaderProgram {
 void drawPub(bartovra::Object* Pub, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
 void drawPodloubi(bartovra::Object* Podloubi, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
 void drawChapel(bartovra::Object* Chapel, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
+void drawChapel2(bartovra::Object* Chapel2, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
 void drawFountain(bartovra::Object* Fountain, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
 void drawWindmill(bartovra::Object* Windmill, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);
 void drawFence(bartovra::Object* Fence, int stencislNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix);

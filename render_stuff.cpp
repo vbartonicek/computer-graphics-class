@@ -18,6 +18,7 @@
 MeshGeometry* PubGeometry = NULL;
 MeshGeometry* PodloubiGeometry = NULL;
 MeshGeometry* ChapelGeometry = NULL;
+MeshGeometry* Chapel2Geometry = NULL;
 MeshGeometry* FountainGeometry = NULL;
 MeshGeometry* WindmillGeometry = NULL;
 MeshGeometry* FenceGeometry = NULL;
@@ -39,6 +40,7 @@ MeshGeometry* PGRskyboxGeometry = NULL;
 const char* PUB_MODEL_NAME = "data/models/housePub/house_obj.obj";
 const char* PODLOUBI_MODEL_NAME = "data/models/houseMedieval/Medieval_House.obj";
 const char* CHAPEL_MODEL_NAME = "data/models/houseChapel/chapel_obj.obj";
+const char* CHAPEL2_MODEL_NAME = "data/models/houseChapel/chapel_obj2.obj";
 const char* FOUNTAIN_MODEL_NAME = "data/models/fountain/fountain.obj";
 const char* WINDMILL_MODEL_NAME = "data/models/windmill/windmill.obj";
 const char* FENCE_MODEL_NAME = "data/models/fence/Old_Fence.obj";
@@ -47,8 +49,8 @@ const char* BASE_MODEL_NAME = "data/models/ground/ground.obj";
 const char* PIG_MODEL_NAME = "data/models/pig/pig.obj";
 const char* PIG2_MODEL_NAME = "data/models/pig/pig.obj";
 const char* BAT_MODEL_NAME = "data/models/bat/bat.obj";
-const char* TREE_MODEL_NAME = "data/models/tree/Tree_OBJ.obj";
-//const char* TREE_MODEL_NAME = "data/models/bat/bat.obj";
+//const char* TREE_MODEL_NAME = "data/models/tree/Tree_OBJ.obj";
+const char* TREE_MODEL_NAME = "data/models/bat/bat.obj";
 
 //Textures path
 const char* SMOKE_TEXTURE_NAME = "data/textures/smoke/smoke_move_square.png";
@@ -257,29 +259,60 @@ void drawChapel(bartovra::Object *Chapel, int stencilNum,const glm::mat4 & viewM
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	glStencilFunc(GL_ALWAYS, stencilNum, -1);
 
-  glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), Chapel->getPosition());
-  modelMatrix = glm::rotate(modelMatrix, Chapel->getViewAngle(), glm::vec3(0, 1, 0));
-  modelMatrix = glm::scale(modelMatrix, glm::vec3(Chapel->getSize(), Chapel->getSize(), Chapel->getSize()));
+	glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), Chapel->getPosition());
+	modelMatrix = glm::rotate(modelMatrix, Chapel->getViewAngle(), glm::vec3(0, 1, 0));
+	modelMatrix = glm::scale(modelMatrix, glm::vec3(Chapel->getSize(), Chapel->getSize(), Chapel->getSize()));
 
-  // setting matrices to the vertex & fragment shader
-  setTransformUniforms(modelMatrix, viewMatrix, projectionMatrix);
+	// setting matrices to the vertex & fragment shader
+	setTransformUniforms(modelMatrix, viewMatrix, projectionMatrix);
 
-  setMaterialUniforms(
-	  ChapelGeometry->ambient,
-	  ChapelGeometry->diffuse,
-	  ChapelGeometry->specular,
-	  ChapelGeometry->shininess,
-	  ChapelGeometry->texture
-	  );
+	setMaterialUniforms(
+		ChapelGeometry->ambient,
+		ChapelGeometry->diffuse,
+		ChapelGeometry->specular,
+		ChapelGeometry->shininess,
+		ChapelGeometry->texture
+		);
 
 
-  glBindVertexArray(ChapelGeometry->vertexArrayObject);
-  glDrawElements(GL_TRIANGLES, ChapelGeometry->numTriangles * 3, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(ChapelGeometry->vertexArrayObject);
+	glDrawElements(GL_TRIANGLES, ChapelGeometry->numTriangles * 3, GL_UNSIGNED_INT, 0);
 
-  glBindVertexArray(0);
-  glUseProgram(0);
+	glBindVertexArray(0);
+	glUseProgram(0);
 
-  return;
+	return;
+}
+
+void drawChapel2(bartovra::Object *Chapel2, int stencilNum, const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix) {
+
+	glUseProgram(shaderProgram.program);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	glStencilFunc(GL_ALWAYS, stencilNum, -1);
+
+	glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), Chapel2->getPosition());
+	modelMatrix = glm::rotate(modelMatrix, Chapel2->getViewAngle(), glm::vec3(0, 1, 0));
+	modelMatrix = glm::scale(modelMatrix, glm::vec3(Chapel2->getSize(), Chapel2->getSize(), Chapel2->getSize()));
+
+	// setting matrices to the vertex & fragment shader
+	setTransformUniforms(modelMatrix, viewMatrix, projectionMatrix);
+
+	setMaterialUniforms(
+		Chapel2Geometry->ambient,
+		Chapel2Geometry->diffuse,
+		Chapel2Geometry->specular,
+		Chapel2Geometry->shininess,
+		Chapel2Geometry->texture
+		);
+
+
+	glBindVertexArray(Chapel2Geometry->vertexArrayObject);
+	glDrawElements(GL_TRIANGLES, Chapel2Geometry->numTriangles * 3, GL_UNSIGNED_INT, 0);
+
+	glBindVertexArray(0);
+	glUseProgram(0);
+
+	return;
 }
 
 void drawFountain(bartovra::Object *Fountain, int stencilNum,const glm::mat4 & viewMatrix, const glm::mat4 & projectionMatrix) {
@@ -1104,6 +1137,12 @@ void initializeModels() {
   }
   CHECK_GL_ERROR();
 
+  // load chapel2 model from external file
+  if (loadSingleMesh(CHAPEL2_MODEL_NAME, shaderProgram, &Chapel2Geometry) != true) {
+	  std::cerr << "initializeModels(): Chapel2 model loading failed." << std::endl;
+  }
+  CHECK_GL_ERROR();
+
   // load fountain model from external file
   if(loadSingleMesh(FOUNTAIN_MODEL_NAME, shaderProgram, &FountainGeometry) != true) {
     std::cerr << "initializeModels(): Fountain model loading failed." << std::endl;
@@ -1180,6 +1219,7 @@ void cleanupModels() {
   cleanupGeometry(PubGeometry);
   cleanupGeometry(PodloubiGeometry);
   cleanupGeometry(ChapelGeometry);
+  cleanupGeometry(Chapel2Geometry);
   cleanupGeometry(FountainGeometry);
   cleanupGeometry(WindmillGeometry);
   cleanupGeometry(FenceGeometry);
